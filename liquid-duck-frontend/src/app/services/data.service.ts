@@ -10,8 +10,8 @@ export class DataService {
 
   constructor(private http:HttpClient) { }
 
-  public saveSpreadSheet(): Observable<any>{
-    const body = {}
-    return this.http.post<any>(`${environment.liquidDuckBackend}/spreadsheet/save`,body)
+  public saveSpreadSheet(data:any): Observable<any>{
+    const body = {data:data}
+    return this.http.post<any>(`${environment.liquidDuckBackend}/save/spread-sheet`,body)
   }
 }

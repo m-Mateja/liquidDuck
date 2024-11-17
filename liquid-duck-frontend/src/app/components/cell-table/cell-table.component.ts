@@ -52,7 +52,8 @@ export class CellTableComponent implements OnInit{
   }
 
   public saveSpreadSheet(){
-    this.dataService.saveSpreadSheet().subscribe((resp:any) => {
+    this.getTableData()
+    this.dataService.saveSpreadSheet(this.data).subscribe((resp:any) => {
       console.log(resp)
     })
   }
