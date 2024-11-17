@@ -38,3 +38,16 @@ $liquid-duck-frontend-theme: mat.define-theme((
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.flex-display-center {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.flex-display-space-between{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
