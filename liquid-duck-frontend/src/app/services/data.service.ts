@@ -14,4 +14,8 @@ export class DataService {
     const body = {data:data}
     return this.http.post<any>(`${environment.liquidDuckBackend}/save/spread-sheet`,body)
   }
+
+  public getSpreadSheet(id:number): Observable<any>{
+    return this.http.get<any>(`${environment.liquidDuckBackend}/get/spread-sheet/${id}`)
+  }
 }
