@@ -10,8 +10,8 @@ import Handsontable from "handsontable";
 export class CellTableComponent implements OnInit{
 
   gridSettings: Handsontable.GridSettings = {
-    startCols:100,
-    startRows:100
+    startCols:50,
+    startRows:50
   }
   constructor() {
 

@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@handsontable/angular": "^14.6.1",
-    "handsontable": "^14.6.1"
-  }
-}

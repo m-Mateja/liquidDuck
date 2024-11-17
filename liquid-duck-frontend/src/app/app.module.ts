@@ -5,6 +5,7 @@ import {CellTableComponent} from "./components/cell-table/cell-table.component";
 import {HotTableModule} from "@handsontable/angular";
 import {registerAllModules} from "handsontable/registry";
 import {BrowserModule} from "@angular/platform-browser";
+import {NavComponent} from "./components/nav/nav.component";
 
 registerAllModules()
 
@@ -16,7 +17,8 @@ registerAllModules()
   imports: [
     BrowserModule,
     CommonModule,
-    HotTableModule
+    HotTableModule,
+    NavComponent
   ],
   providers: [],
   bootstrap: [
