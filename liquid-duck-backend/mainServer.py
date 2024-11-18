@@ -19,7 +19,7 @@ db = duckdb.connect('liquidDuckDb.duckdb', read_only=False)
 dbManager.migrate(db)
 
 @app.route('/api/save/spread-sheet', methods=['POST'])
-def saveSpreadSheet() -> str:
+def saveSpreadSheet() -> dict:
     tempData = request.get_json()
     data = tempData.get('data')
     name = tempData.get('name')
@@ -30,17 +30,22 @@ def saveSpreadSheet() -> str:
     pq.write_table(table,buffer)
     pqEncoded = buffer.getvalue()
     dbManager.insertLiquidSheet(db, id, name, pqEncoded)
-    return 'Wow we did it'
+    return {'data':'Saved Liquid Sheet'}
 
 @app.route('/api/get/spread-sheet/<int:id>', methods=['GET'])
-def getSpreadSheet(id):
+def getSpreadSheet(id) -> dict:
     liquidSheet = dbManager.getLiquidSheetById(db, id)
+    name = liquidSheet[1]
+    data = liquidSheet[2]
     print(liquidSheet)
-    buffer = io.BytesIO(liquidSheet[2])
+    buffer = io.BytesIO(data)
     table = pq.read_table(buffer)
     df = table.to_pandas()
     spreadSheet = df.values.tolist()
-    return spreadSheet
+
+    return {'liquidSheetName':name,
+            'data':spreadSheet
+            }
 
 @socketio.on('connect')
 def handle_connect():
@@ -55,7 +60,11 @@ def handle_disconnect():
 
 @socketio.on('message')
 def handle_message(message):
-    emit('message', f'This was the message: {message}', broadcast=True)
+    emit('message', {'message':message}, broadcast=True)
+
+@socketio.on('titleChange')
+def handle_titleChange(message):
+    emit('titleChange', {'title':message}, broadcast=True)
 
 
 if __name__ == '__main__':
