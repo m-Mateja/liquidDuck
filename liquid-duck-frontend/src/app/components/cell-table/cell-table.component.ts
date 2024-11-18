@@ -57,6 +57,14 @@ export class CellTableComponent implements OnInit{
       console.log(resp)
     })
   }
+
+  //TODO change this to be dynamic instead of 1
+  public getSpreadSheet(){
+    this.dataService.getSpreadSheet(1).subscribe((resp:any) => {
+      console.log(resp)
+      // this.data = hotInstance
+    })
+  }
 }
 
 interface Cell {
