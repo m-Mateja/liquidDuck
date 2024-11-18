@@ -24,6 +24,8 @@ export class CellTableComponent implements OnInit{
 
   hotId:string = 'hotInstance'
   data: any[] = []
+  name: string = 'testName'
+  id: number = 1
 
   constructor(private hotRegisterer: HotTableRegisterer,
               private dataService: DataService) {
@@ -53,16 +55,18 @@ export class CellTableComponent implements OnInit{
 
   public saveSpreadSheet(){
     this.getTableData()
-    this.dataService.saveSpreadSheet(this.data).subscribe((resp:any) => {
+    this.dataService.saveSpreadSheet(this.id, this.name, this.data).subscribe((resp:any) => {
       console.log(resp)
     })
   }
 
   //TODO change this to be dynamic instead of 1
   public getSpreadSheet(){
-    this.dataService.getSpreadSheet(1).subscribe((resp:any) => {
+    this.dataService.getSpreadSheet(this.id).subscribe((resp:any) => {
+      const hotInstance = this.hotRegisterer.getInstance(this.hotId);
       console.log(resp)
-      // this.data = hotInstance
+      hotInstance.updateData(resp)
+      this.data = hotInstance.getData()
     })
   }
 }
