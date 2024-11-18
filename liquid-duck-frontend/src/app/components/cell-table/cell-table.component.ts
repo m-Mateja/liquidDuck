@@ -29,62 +29,72 @@ export class CellTableComponent implements OnInit, OnDestroy{
   liquidSheetName: string = ''
   id: number = 1
 
-  messageSub: Subscription
+  messageSub!: Subscription
+  isUpdatingFromSocket: boolean = false
 
   constructor(private hotRegisterer: HotTableRegisterer,
               private dataService: DataService,
               private socketService:SocketService) {
 
-    this.messageSub = this.socketService.on('message').subscribe((resp) => {
-        console.log(resp)
-      })
-    this.messageSub = this.socketService.on('titleChange').subscribe((resp) => {
-      this.liquidSheetName = resp.title
-    })
-
+    this.titleChangeSub()
+    this.cellChangeSub()
   }
 
   ngOnInit() {
     this.getSpreadSheet()
   }
 
+  private titleChangeSub(){
+    this.messageSub = this.socketService.on('titleChange').subscribe((resp) => {
+      this.liquidSheetName = resp.title
+    })
+  }
+
+  private cellChangeSub(){
+    this.messageSub = this.socketService.on('cellChange').subscribe((resp) => {
+      const hotInstance = this.getHotInstance()
+      this.isUpdatingFromSocket = true
+      hotInstance.setDataAtRowProp(resp.row, resp.prop, resp.newValue, 'socket')
+      this.isUpdatingFromSocket = false
+      console.log('Received cellChange:', resp)
+    })
+  }
+
   public nameChangeWs(event:string){
     this.socketService.sendMessage('titleChange', event)
   }
 
-  public updateSpreadSheet(changes: any, source: string){
-    console.log(changes)
-    console.log(source)
-    // if (source === 'edit' && changes) {
-    //   changes.forEach(([row, prop, oldValue, newValue]: any) => {
-    //
-    //   });
-    // }
+  public updateSpreadSheet(changes: any){
+    if(!this.isUpdatingFromSocket && changes !== null){
+      changes.forEach((changeArr:any[]) => {
+        this.socketService.sendMessage('cellChange', changeArr)
+      })
+    }
   }
 
   public getTableData() {
-    const hotInstance = this.hotRegisterer.getInstance(this.hotId);
+    const hotInstance = this.getHotInstance()
     if (hotInstance) {
       this.data = hotInstance.getData()
-      console.log(this.data); // Outputs the current table data
     }
   }
 
   public saveSpreadSheet(){
     this.getTableData()
-    this.dataService.saveSpreadSheet(this.id, this.liquidSheetName, this.data).subscribe((resp:any) => {
-      console.log(resp)
-    })
+    this.dataService.saveSpreadSheet(this.id, this.liquidSheetName, this.data).subscribe(() => {})
   }
 
-  //TODO change this to be dynamic instead of 1
   public getSpreadSheet(){
     this.dataService.getSpreadSheet(this.id).subscribe((resp:any) => {
-      const hotInstance = this.hotRegisterer.getInstance(this.hotId);
+      const hotInstance = this.getHotInstance()
       hotInstance.updateData(resp.data)
       this.data = hotInstance.getData()
       this.liquidSheetName = resp.liquidSheetName
     })
+  }
+
+  private getHotInstance(): Handsontable{
+    return this.hotRegisterer.getInstance(this.hotId)
   }
 
   ngOnDestroy() {
