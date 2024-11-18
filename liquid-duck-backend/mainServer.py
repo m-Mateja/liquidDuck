@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
+from flask_socketio import SocketIO, send, emit
 import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -9,6 +10,7 @@ import dbManager
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 db = duckdb.connect('liquidDuckDb.duckdb', read_only=False)
 dbManager.migrate(db)
@@ -37,6 +39,19 @@ def getSpreadSheet(id):
     spreadSheet = df.values.tolist()
     return spreadSheet
 
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+    send('Welcome to the WebSocket server!')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+@socketio.on('message')
+def handle_message(message):
+    print(message)
+
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    socketio.run(app, host='127.0.0.1', port=5000, allow_unsafe_werkzeug=True)
