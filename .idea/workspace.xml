@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5df033f7-aa03-43fc-9d05-0df997a2e259" name="Changes" comment="requirements.txt">
-      <change beforePath="$PROJECT_DIR$/liquid-duck-backend/liquidDuckDb.duckdb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquid-duck-backend/mainServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/liquid-duck-backend/mainServer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquid-duck-frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/liquid-duck-frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liquid-duck-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/liquid-duck-frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liquid-duck-frontend/src/app/components/cell-table/cell-table.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/liquid-duck-frontend/src/app/components/cell-table/cell-table.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,25 +39,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/blackbear/Desktop/DEV/interview/liquidDuck",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.47126436",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "ts.external.directory.path": "/Users/blackbear/Desktop/DEV/interview/liquidDuck/liquid-duck-frontend/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/blackbear/Desktop/DEV/interview/liquidDuck&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.47126436&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/blackbear/Desktop/DEV/interview/liquidDuck/liquid-duck-frontend/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="mainServer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="liquidDuck" />
@@ -109,6 +107,7 @@
       <workItem from="1731900233709" duration="96000" />
       <workItem from="1731900495271" duration="9000" />
       <workItem from="1731900589448" duration="358000" />
+      <workItem from="1731902605018" duration="19000" />
     </task>
     <task id="LOCAL-00001" summary="requirements.txt">
       <option name="closed" value="true" />
@@ -126,9 +125,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="requirements.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="requirements.txt" />
+    <MESSAGE value="main server refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="main server refactor" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/liquidDuck$mainServer.coverage" NAME="mainServer Coverage Results" MODIFIED="1731902401627" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/liquid-duck-backend" />
+    <SUITE FILE_PATH="coverage/liquidDuck$mainServer.coverage" NAME="mainServer Coverage Results" MODIFIED="1731902446692" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/liquid-duck-backend" />
   </component>
 </project>

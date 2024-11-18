@@ -1,7 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import Handsontable from "handsontable";
 import {HotTableRegisterer} from "@handsontable/angular";
 import {DataService} from "../../services/data.service";
+import {SocketService} from "../../services/socket.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-cell-table',
@@ -10,7 +12,7 @@ import {DataService} from "../../services/data.service";
   providers: []
 })
 
-export class CellTableComponent implements OnInit{
+export class CellTableComponent implements OnInit, OnDestroy{
 
   gridSettings: Handsontable.GridSettings = {
     startCols:50,
@@ -27,8 +29,15 @@ export class CellTableComponent implements OnInit{
   name: string = 'testName'
   id: number = 1
 
+  messageSub: Subscription
+
   constructor(private hotRegisterer: HotTableRegisterer,
-              private dataService: DataService) {
+              private dataService: DataService,
+              private socketService:SocketService) {
+
+    this.messageSub = this.socketService.on('message').subscribe((data) => {
+        console.log(data)
+      })
 
   }
 
@@ -69,6 +78,15 @@ export class CellTableComponent implements OnInit{
       this.data = hotInstance.getData()
     })
   }
+
+  sendMessage() {
+    this.socketService.emit('message', 'hello world');
+  }
+
+  ngOnDestroy() {
+    this.messageSub.unsubscribe();
+  }
+
 }
 
 interface Cell {
