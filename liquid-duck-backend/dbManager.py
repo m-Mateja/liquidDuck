@@ -6,8 +6,10 @@ def migrate(db):
         id INTEGER PRIMARY KEY,
         name VARCHAR(128) NOT NULL,
         parquet_file BLOB NOT NULL
-    );
+    )
     ''')
+
+    db.execute('CREATE TABLE IF NOT EXISTS sessions (session_id INTEGER PRIMARY KEY)')
 
 def insertLiquidSheet(db,id,sheetName,pqEncoded):
 

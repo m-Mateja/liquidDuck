@@ -9,7 +9,10 @@ import io
 import dbManager
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={
+    r"/api/*": {"origins": "*"},
+    r"/socket.io/*": {"origins": "*"}
+})
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 db = duckdb.connect('liquidDuckDb.duckdb', read_only=False)
@@ -41,16 +44,18 @@ def getSpreadSheet(id):
 
 @socketio.on('connect')
 def handle_connect():
-    print('Client connected')
-    send('Welcome to the WebSocket server!')
+    sessionId = request.args.get('sessionId')
+    print(f'{sessionId} Connected')
+    send(f'welcome to the ws {sessionId}')
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('Client disconnected')
+    sessionId = request.args.get('sessionId')
+    print(f'{sessionId} Disconnected')
 
 @socketio.on('message')
 def handle_message(message):
-    print(message)
+    emit('message', f'This was the message: {message}', broadcast=True)
 
 
 if __name__ == '__main__':

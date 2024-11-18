@@ -26,7 +26,7 @@ export class CellTableComponent implements OnInit, OnDestroy{
 
   hotId:string = 'hotInstance'
   data: any[] = []
-  name: string = 'testName'
+  liquidSheetname: string = 'testName'
   id: number = 1
 
   messageSub: Subscription
@@ -64,13 +64,14 @@ export class CellTableComponent implements OnInit, OnDestroy{
 
   public saveSpreadSheet(){
     this.getTableData()
-    this.dataService.saveSpreadSheet(this.id, this.name, this.data).subscribe((resp:any) => {
+    this.dataService.saveSpreadSheet(this.id, this.liquidSheetname, this.data).subscribe((resp:any) => {
       console.log(resp)
     })
   }
 
   //TODO change this to be dynamic instead of 1
   public getSpreadSheet(){
+    this.sendMessage()
     this.dataService.getSpreadSheet(this.id).subscribe((resp:any) => {
       const hotInstance = this.hotRegisterer.getInstance(this.hotId);
       console.log(resp)

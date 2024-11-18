@@ -9,7 +9,14 @@ export class SocketService {
 
   private socket: Socket
   constructor() {
-    this.socket = io('http://127.0.0.1:5000')
+    this.socket = io('http://127.0.0.1:5000', {
+      transports: ['websocket'],
+      secure: false,
+      rejectUnauthorized: false,
+      query:{
+        sessionId: crypto.randomUUID()
+      }
+    })
   }
 
   public emit(event: string, data: any) {
