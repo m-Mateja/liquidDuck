@@ -1,9 +1,12 @@
+<button mat-raised-button (click)="saveSpreadSheet()">save sheet</button>
+<button mat-raised-button (click)="getSpreadSheet()">get sheet</button>
 <div>
   <hot-table
+    [hotId]="hotId"
     [settings]="gridSettings"
-    [data]=""
     [colHeaders]="true"
     [rowHeaders]="true"
     licenseKey="non-commercial-and-evaluation">
   </hot-table>
 </div>
+
