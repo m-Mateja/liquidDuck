@@ -34,18 +34,15 @@ def saveSpreadSheet() -> str:
 
 @app.route('/api/get/spread-sheet/<int:id>', methods=['GET'])
 def getSpreadSheet(id) -> dict:
-    try:
-        liquidSheet = dbManager.getLiquidSheetById(db, id)
-        name = liquidSheet[1]
-        data = liquidSheet[2]
-        print(liquidSheet)
-        buffer = io.BytesIO(data)
-        table = pq.read_table(buffer)
-        df = table.to_pandas()
-        spreadSheet = df.values.tolist()
-    except TypeError as e:
-        name = ''
-        spreadSheet = []
+
+    liquidSheet = dbManager.getLiquidSheetById(db, id)
+    name = liquidSheet[1]
+    data = liquidSheet[2]
+    print(liquidSheet)
+    buffer = io.BytesIO(data)
+    table = pq.read_table(buffer)
+    df = table.to_pandas()
+    spreadSheet = df.values.tolist()
 
     return {'liquidSheetName':name,
             'data':spreadSheet
