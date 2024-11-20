@@ -3,7 +3,9 @@ import Handsontable from "handsontable";
 import {HotTableRegisterer} from "@handsontable/angular";
 import {DataService} from "../../services/data.service";
 import {SocketService} from "../../services/socket.service";
-import {Subscription} from "rxjs";
+import {interval, Subscription} from "rxjs";
+import {HyperFormula} from "hyperformula";
+
 
 /**
  * @Mateja Milovanovic
@@ -24,14 +26,18 @@ export class CellTableComponent implements OnInit, OnDestroy{
    * afterChange hook tracks any changes made to the grid. This is bound to the updateSpreadSheet method
    */
   gridSettings: Handsontable.GridSettings = {
-    startCols:50,
-    startRows:50,
+    startCols:30,
+    startRows:30,
+    formulas: {
+      engine: HyperFormula,
+    },
     allowInsertRow: false,
     allowInsertColumn: false,
     allowRemoveRow: false,
     allowRemoveColumn: false,
     afterChange: this.updateSpreadSheet.bind(this)
   }
+
 
   /**
    * init configurations
@@ -50,16 +56,23 @@ export class CellTableComponent implements OnInit, OnDestroy{
   messageSub!: Subscription
   isUpdatingFromSocket: boolean = false
 
+  timerSub!: Subscription
+
   constructor(private hotRegisterer: HotTableRegisterer,
               private dataService: DataService,
               private socketService:SocketService) {
 
+    this.saveTimerSub()
     this.titleChangeSub()
     this.cellChangeSub()
   }
 
   ngOnInit(): void {
     this.getSpreadSheet()
+  }
+
+  private saveTimerSub(){
+    this.timerSub = interval(5000).subscribe(() => {this.saveSpreadSheet()})
   }
 
   /**

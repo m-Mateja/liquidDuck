@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {DashboardComponent} from "./components/dashboard/dashboard.component";
 import {CellTableComponent} from "./components/cell-table/cell-table.component";
-import {HotTableModule, HotTableRegisterer} from "@handsontable/angular";
+import {HotTableModule, HotTableRegisterer,} from "@handsontable/angular";
 import {registerAllModules} from "handsontable/registry";
 import {BrowserModule} from "@angular/platform-browser";
 import {NavComponent} from "./components/nav/nav.component";

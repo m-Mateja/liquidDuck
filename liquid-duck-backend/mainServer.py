@@ -19,7 +19,7 @@ db = duckdb.connect('liquidDuckDb.duckdb', read_only=False)
 dbManager.migrate(db)
 
 @app.route('/api/save/spread-sheet', methods=['POST'])
-def saveSpreadSheet() -> None:
+def saveSpreadSheet() -> str:
     tempData = request.get_json()
     data = tempData.get('data')
     name = tempData.get('name')
@@ -30,17 +30,22 @@ def saveSpreadSheet() -> None:
     pq.write_table(table,buffer)
     pqEncoded = buffer.getvalue()
     dbManager.insertLiquidSheet(db, id, name, pqEncoded)
+    return 'Save completed'
 
 @app.route('/api/get/spread-sheet/<int:id>', methods=['GET'])
 def getSpreadSheet(id) -> dict:
-    liquidSheet = dbManager.getLiquidSheetById(db, id)
-    name = liquidSheet[1]
-    data = liquidSheet[2]
-    print(liquidSheet)
-    buffer = io.BytesIO(data)
-    table = pq.read_table(buffer)
-    df = table.to_pandas()
-    spreadSheet = df.values.tolist()
+    try:
+        liquidSheet = dbManager.getLiquidSheetById(db, id)
+        name = liquidSheet[1]
+        data = liquidSheet[2]
+        print(liquidSheet)
+        buffer = io.BytesIO(data)
+        table = pq.read_table(buffer)
+        df = table.to_pandas()
+        spreadSheet = df.values.tolist()
+    except TypeError as e:
+        name = ''
+        spreadSheet = []
 
     return {'liquidSheetName':name,
             'data':spreadSheet
