@@ -1,11 +1,10 @@
 <!--<button mat-raised-button (click)="getSpreadSheet()">get sheet</button>-->
 <div class="flex-display" style="padding: 1em 1em 0 1em">
+<!--  TODO figure out a way to update tytle async as well-->
   <mat-form-field appearance="outline" >
     <mat-label> Liquid Sheet Name </mat-label>
     <input matInput [(ngModel)]="liquidSheetName" (ngModelChange)="nameChangeWs($event)"/>
   </mat-form-field>
-  <button mat-raised-button (click)="saveSpreadSheet()" style="margin: 0 0 20px 10px">Save Liquid Sheet</button>
-
 </div>
 <div>
   <hot-table

@@ -56,23 +56,16 @@ export class CellTableComponent implements OnInit, OnDestroy{
   messageSub!: Subscription
   isUpdatingFromSocket: boolean = false
 
-  timerSub!: Subscription
-
   constructor(private hotRegisterer: HotTableRegisterer,
               private dataService: DataService,
               private socketService:SocketService) {
 
-    this.saveTimerSub()
     this.titleChangeSub()
     this.cellChangeSub()
   }
 
   ngOnInit(): void {
     this.getSpreadSheet()
-  }
-
-  private saveTimerSub(){
-    this.timerSub = interval(5000).subscribe(() => {this.saveSpreadSheet()})
   }
 
   /**
@@ -113,7 +106,10 @@ export class CellTableComponent implements OnInit, OnDestroy{
    * update cells on the table when there is a change detected
    * only send a cell change websocket message if there are no current updates from the websocket
    */
-  public updateSpreadSheet(changes: any): void{
+  public updateSpreadSheet(changes: any, source: any): void{
+    if (source !== 'socket'){
+      this.saveSpreadSheet()
+    }
     if(!this.isUpdatingFromSocket && changes !== null){
       changes.forEach((changeArr:any[]) => {
         this.socketService.sendMessage('cellChange', changeArr)
