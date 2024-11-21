@@ -7,50 +7,68 @@ import pyarrow.parquet as pq
 import pandas as pd
 import io
 import dbManager
+import service
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={
+    r"/api/*": {"origins": "*"},
+    r"/socket.io/*": {"origins": "*"}
+})
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 db = duckdb.connect('liquidDuckDb.duckdb', read_only=False)
 dbManager.migrate(db)
 
 @app.route('/api/save/spread-sheet', methods=['POST'])
-def saveSpreadSheet() -> str:
+def saveSpreadSheet() -> dict:
     tempData = request.get_json()
-    data = tempData.get('data')
-    name = tempData.get('name')
-    id = tempData.get('id')
-    df = pd.DataFrame(data)
-    table = pa.Table.from_pandas(df)
-    buffer = io.BytesIO()
-    pq.write_table(table,buffer)
-    pqEncoded = buffer.getvalue()
+    [id,name,pqEncoded] = service.postLiquidSheet(tempData)
     dbManager.insertLiquidSheet(db, id, name, pqEncoded)
-    return 'Wow we did it'
+    return {'data':'Save completed'}
 
 @app.route('/api/get/spread-sheet/<int:id>', methods=['GET'])
-def getSpreadSheet(id):
+def getSpreadSheet(id) -> dict:
     liquidSheet = dbManager.getLiquidSheetById(db, id)
-    print(liquidSheet)
-    buffer = io.BytesIO(liquidSheet[2])
-    table = pq.read_table(buffer)
-    df = table.to_pandas()
-    spreadSheet = df.values.tolist()
-    return spreadSheet
+    [id,name,spreadSheet] = service.getLiquidSheet(liquidSheet)
+    return {'liquidSheetName':name,
+            'data':spreadSheet
+            }
+
+@app.route('/api/get/spread-sheet/all', methods=['GET'])
+def getAllSpreadSheets() -> dict:
+    allSheets = []
+    liquidSheets = dbManager.getAllLiquidSheets(db)
+
+    for sheet in liquidSheets:
+        [id,name,spreadSheet] = service.getLiquidSheet(sheet)
+        allSheets.append([id,name,spreadSheet])
+
+    return {'data':allSheets}
 
 @socketio.on('connect')
 def handle_connect():
-    print('Client connected')
-    send('Welcome to the WebSocket server!')
+    sessionId = request.args.get('sessionId')
+    print(f'{sessionId} Connected')
+    send(f'welcome to the ws {sessionId}')
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('Client disconnected')
+    sessionId = request.args.get('sessionId')
+    print(f'{sessionId} Disconnected')
 
-@socketio.on('message')
-def handle_message(message):
-    print(message)
+@socketio.on('titleChange')
+def handle_titleChange(message):
+    emit('titleChange', {'id':message[0],'title':message[1]}, broadcast=True)
+
+@socketio.on('cellChange')
+def handle_cellChange(message):
+    emit('cellChange', {
+        'id':message[0],
+        'row': message[1][0],
+        'prop': message[1][1],
+        'newValue': message[1][3]
+    }, broadcast=True, include_self=False)
+
 
 
 if __name__ == '__main__':

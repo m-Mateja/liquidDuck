@@ -9,20 +9,20 @@ export class DataService {
 
   constructor(private http:HttpClient) { }
 
-  public saveSpreadSheet(id:number, name:string, data:any): Observable<any>{
+  public saveSpreadSheet(id:number, name:string, data:any): Observable<string>{
     const body = {
       id:id,
       name:name,
       data:data
     }
-    return this.http.post<any>(`${environment.liquidDuckBackend}/save/spread-sheet`,body)
+    return this.http.post<string>(`${environment.liquidDuckBackend}/save/spread-sheet`,body)
   }
 
   public getSpreadSheet(id:number): Observable<any>{
     return this.http.get<any>(`${environment.liquidDuckBackend}/get/spread-sheet/${id}`)
   }
 
-  public getAllSpreadSheetIds(): Observable<any>{
-    return this.http.get<any>(`${environment.liquidDuckBackend}/get/all-ids`)
+  public getAllSpreadSheets(): Observable<any>{
+    return this.http.get<any>(`${environment.liquidDuckBackend}/get/spread-sheet/all`)
   }
 }

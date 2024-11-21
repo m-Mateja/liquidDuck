@@ -51,3 +51,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   align-items:center;
 }
 
+.flex-display-space-evenly{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.flex-display{
+  display:flex;
+  align-items: center;
+}
+
