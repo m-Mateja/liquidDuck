@@ -27,8 +27,8 @@ export class CellTableComponent implements OnInit, OnDestroy{
    */
   gridSettings: Handsontable.GridSettings = {
     startCols:30,
-    startRows:30,
-    height:800,
+    startRows:60,
+    height:1200,
     width:1500,
     formulas: {
       engine: HyperFormula,
@@ -71,7 +71,6 @@ export class CellTableComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
-    this.getAllSpreadSheets()
   }
 
   /**
@@ -83,6 +82,7 @@ export class CellTableComponent implements OnInit, OnDestroy{
       const permission = this.conditionalWebSocketUpdates(resp.id)
       if(permission){
         this.liquidSheetName = resp.title
+        this.selectedOption[1] = this.liquidSheetName
       }
     })
   }
@@ -122,7 +122,7 @@ export class CellTableComponent implements OnInit, OnDestroy{
     if (!this.dataSources.includes(source)){
       this.saveSpreadSheet()
     }
-    if(!this.isUpdatingFromSocket && changes !== null){
+    if(!this.isUpdatingFromSocket && changes !== null && this.selectedOption !== undefined){
       changes.forEach((changeArr:any[]) => {
         this.socketService.sendMessage('cellChange', [this.selectedOption[0],changeArr])
       })
@@ -145,12 +145,18 @@ export class CellTableComponent implements OnInit, OnDestroy{
    * API call to save the liquid sheet to the db with parameters
    */
   public saveSpreadSheet(): void{
-    console.log(this.liquidSheetName)
-    this.getTableData()
-    this.dataService.saveSpreadSheet(this.selectedOption[0], this.liquidSheetName, this.data).subscribe((resp:string) => {})
-
+    if(this.selectedOption !== undefined){
+      this.getTableData()
+      this.dataService.saveSpreadSheet(this.selectedOption[0], this.liquidSheetName, this.data).subscribe((resp:string) => {})
+    }
   }
 
+  /**
+   * Save a new spreadsheet to the db
+   * Increment id by 1 for the db storage
+   * Take the id index from the last element in the list and add 1
+   * Refresh the liquidSheets array
+   */
   public saveNewSpreadSheet(): void{
     let newId:number = 0
     if(this.liquidSheets.length !== 0){
@@ -161,8 +167,12 @@ export class CellTableComponent implements OnInit, OnDestroy{
       this.liquidSheets = []
       this.getAllSpreadSheets()
     })
+    this.newLiquidSheetName = ''
   }
 
+  /**
+   * On selection change from the dropdown menu, get data for the specific spreadsheet selected
+   */
   public selectNewTableFromDropdown(liquidSheet:any){
     this.getSpreadSheet(liquidSheet[0])
   }
@@ -180,7 +190,12 @@ export class CellTableComponent implements OnInit, OnDestroy{
     })
   }
 
+  /**
+   * Get all existing spreadsheets from the db
+   * Append all of the sheets to an array
+   */
   public getAllSpreadSheets(): void{
+    this.liquidSheets = []
     this.dataService.getAllSpreadSheets().subscribe((resp:any) => {
       if(resp.data.length > 0){
         resp.data.forEach((liquidSheet:any) => {
@@ -190,8 +205,21 @@ export class CellTableComponent implements OnInit, OnDestroy{
     })
   }
 
+  /**
+   * Get all spreadsheets on dropdown menu open
+   */
+  public sheetMenuOnOpen(){
+    this.getAllSpreadSheets()
+  }
+
+  /**
+   * Only apply websocket updates if a dropdown selection has already been made. If not, don't do anything since it can be handled by an api call
+   */
   private conditionalWebSocketUpdates(incomingData:any): boolean{
-    return this.selectedOption[0] == incomingData;
+    if(this.selectedOption !== undefined){
+      return this.selectedOption[0] == incomingData
+    }
+    return false
   }
 
   /**

@@ -1,7 +1,7 @@
 <div class="flex-display" style="padding: 1em 1em 0 1em; gap: 20px">
   <mat-form-field appearance="outline">
     <mat-label>Liquid Sheets</mat-label>
-    <mat-select [(value)]="selectedOption" (selectionChange)="selectNewTableFromDropdown($event.value)">
+    <mat-select [(value)]="selectedOption" (selectionChange)="selectNewTableFromDropdown($event.value)" (opened)="sheetMenuOnOpen()">
       <mat-option>
         <div class="flex-display-space-evenly">
             <span style="background-color: white">
@@ -18,7 +18,7 @@
       <mat-option *ngFor="let sheet of liquidSheets" [value]="sheet">{{sheet[1]}}</mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-form-field appearance="outline" >
+  <mat-form-field appearance="outline" *ngIf="selectedOption !== undefined">
     <mat-label> Liquid Sheet Name </mat-label>
     <input matInput [(ngModel)]="liquidSheetName" (ngModelChange)="nameChangeWs($event)" (blur)="saveSpreadSheet()"/>
   </mat-form-field>
