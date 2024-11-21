@@ -28,6 +28,8 @@ export class CellTableComponent implements OnInit, OnDestroy{
   gridSettings: Handsontable.GridSettings = {
     startCols:30,
     startRows:30,
+    height:800,
+    width:1500,
     formulas: {
       engine: HyperFormula,
     },
@@ -47,6 +49,10 @@ export class CellTableComponent implements OnInit, OnDestroy{
   hotId:string = 'hotInstance'
   data: any[] = []
   liquidSheetName: string = ''
+  newLiquidSheetName: string = ''
+  selectedOption: any
+  liquidSheets:any[] = []
+  dataSources:string[] = ['loadData','updateData','socket']
   id: number = 1
 
   /**
@@ -65,7 +71,7 @@ export class CellTableComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
-    this.getSpreadSheet()
+    this.getAllSpreadSheets()
   }
 
   /**
@@ -74,7 +80,10 @@ export class CellTableComponent implements OnInit, OnDestroy{
    */
   private titleChangeSub(): void{
     this.messageSub = this.socketService.on('titleChange').subscribe((resp) => {
-      this.liquidSheetName = resp.title
+      const permission = this.conditionalWebSocketUpdates(resp.id)
+      if(permission){
+        this.liquidSheetName = resp.title
+      }
     })
   }
 
@@ -87,10 +96,13 @@ export class CellTableComponent implements OnInit, OnDestroy{
    */
   private cellChangeSub(): void{
     this.messageSub = this.socketService.on('cellChange').subscribe((resp) => {
-      const hotInstance:Handsontable = this.getHotInstance()
-      this.isUpdatingFromSocket = true
-      hotInstance.setDataAtRowProp(resp.row, resp.prop, resp.newValue, 'socket')
-      this.isUpdatingFromSocket = false
+      const permission = this.conditionalWebSocketUpdates(resp.id)
+      if(permission){
+        const hotInstance:Handsontable = this.getHotInstance()
+        this.isUpdatingFromSocket = true
+        hotInstance.setDataAtRowProp(resp.row, resp.prop, resp.newValue, 'socket')
+        this.isUpdatingFromSocket = false
+      }
     })
   }
 
@@ -99,7 +111,7 @@ export class CellTableComponent implements OnInit, OnDestroy{
    * bound to ngModelChange for continuous updates
    */
   public nameChangeWs(event:string): void{
-    this.socketService.sendMessage('titleChange', event)
+    this.socketService.sendMessage('titleChange', [this.selectedOption[0],event])
   }
 
   /**
@@ -107,12 +119,12 @@ export class CellTableComponent implements OnInit, OnDestroy{
    * only send a cell change websocket message if there are no current updates from the websocket
    */
   public updateSpreadSheet(changes: any, source: any): void{
-    if (source !== 'socket'){
+    if (!this.dataSources.includes(source)){
       this.saveSpreadSheet()
     }
     if(!this.isUpdatingFromSocket && changes !== null){
       changes.forEach((changeArr:any[]) => {
-        this.socketService.sendMessage('cellChange', changeArr)
+        this.socketService.sendMessage('cellChange', [this.selectedOption[0],changeArr])
       })
     }
   }
@@ -133,21 +145,53 @@ export class CellTableComponent implements OnInit, OnDestroy{
    * API call to save the liquid sheet to the db with parameters
    */
   public saveSpreadSheet(): void{
+    console.log(this.liquidSheetName)
     this.getTableData()
-    this.dataService.saveSpreadSheet(this.id, this.liquidSheetName, this.data).subscribe(() => {})
+    this.dataService.saveSpreadSheet(this.selectedOption[0], this.liquidSheetName, this.data).subscribe((resp:string) => {})
+
+  }
+
+  public saveNewSpreadSheet(): void{
+    let newId:number = 0
+    if(this.liquidSheets.length !== 0){
+      newId = this.liquidSheets[this.liquidSheets.length - 1][0] + 1
+    }
+    this.getTableData()
+    this.dataService.saveSpreadSheet(newId, this.newLiquidSheetName, this.data).subscribe((resp:string) => {
+      this.liquidSheets = []
+      this.getAllSpreadSheets()
+    })
+  }
+
+  public selectNewTableFromDropdown(liquidSheet:any){
+    this.getSpreadSheet(liquidSheet[0])
   }
 
   /**
    * API call to get the current sheet from the db
    * get current table instance and update this.data from the resp
    */
-  public getSpreadSheet(): void{
-    this.dataService.getSpreadSheet(this.id).subscribe((resp:any) => {
+  public getSpreadSheet(id:number): void{
+    this.dataService.getSpreadSheet(id).subscribe((resp:any) => {
       const hotInstance:Handsontable = this.getHotInstance()
       hotInstance.updateData(resp.data)
       this.data = hotInstance.getData()
       this.liquidSheetName = resp.liquidSheetName
     })
+  }
+
+  public getAllSpreadSheets(): void{
+    this.dataService.getAllSpreadSheets().subscribe((resp:any) => {
+      if(resp.data.length > 0){
+        resp.data.forEach((liquidSheet:any) => {
+          this.liquidSheets.push(liquidSheet)
+        })
+      }
+    })
+  }
+
+  private conditionalWebSocketUpdates(incomingData:any): boolean{
+    return this.selectedOption[0] == incomingData;
   }
 
   /**

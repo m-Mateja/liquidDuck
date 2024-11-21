@@ -27,7 +27,7 @@ def getLiquidSheetById(db,id):
 def updateLiquidSheet(db,id,sheetName,pqEncoded):
     db.execute('UPDATE liquid_sheets SET name = ?, parquet_file = ? WHERE id = ?', (sheetName, pqEncoded, id))
 
-def getAllLiquidSheetIds(db,id):
-    return db.execute('SELECT ? FROM liquid_sheets', (id,)).fetchall()
+def getAllLiquidSheets(db):
+    return db.execute('SELECT * FROM liquid_sheets').fetchall()
 
 

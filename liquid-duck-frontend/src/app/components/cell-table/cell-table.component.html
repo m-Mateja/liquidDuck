@@ -1,9 +1,26 @@
-<!--<button mat-raised-button (click)="getSpreadSheet()">get sheet</button>-->
-<div class="flex-display" style="padding: 1em 1em 0 1em">
-<!--  TODO figure out a way to update tytle async as well-->
+<div class="flex-display" style="padding: 1em 1em 0 1em; gap: 20px">
+  <mat-form-field appearance="outline">
+    <mat-label>Liquid Sheets</mat-label>
+    <mat-select [(value)]="selectedOption" (selectionChange)="selectNewTableFromDropdown($event.value)">
+      <mat-option>
+        <div class="flex-display-space-evenly">
+            <span style="background-color: white">
+              <input
+                matInput
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                [(ngModel)]="newLiquidSheetName"
+              />
+            </span>
+          <mat-icon style="margin:0 0 0 10px !important;" (click)="saveNewSpreadSheet()">check_mark</mat-icon>
+        </div>
+      </mat-option>
+      <mat-option *ngFor="let sheet of liquidSheets" [value]="sheet">{{sheet[1]}}</mat-option>
+    </mat-select>
+  </mat-form-field>
   <mat-form-field appearance="outline" >
     <mat-label> Liquid Sheet Name </mat-label>
-    <input matInput [(ngModel)]="liquidSheetName" (ngModelChange)="nameChangeWs($event)"/>
+    <input matInput [(ngModel)]="liquidSheetName" (ngModelChange)="nameChangeWs($event)" (blur)="saveSpreadSheet()"/>
   </mat-form-field>
 </div>
 <div>

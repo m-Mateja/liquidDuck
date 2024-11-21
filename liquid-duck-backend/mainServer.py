@@ -7,6 +7,7 @@ import pyarrow.parquet as pq
 import pandas as pd
 import io
 import dbManager
+import service
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -19,34 +20,30 @@ db = duckdb.connect('liquidDuckDb.duckdb', read_only=False)
 dbManager.migrate(db)
 
 @app.route('/api/save/spread-sheet', methods=['POST'])
-def saveSpreadSheet() -> str:
+def saveSpreadSheet() -> dict:
     tempData = request.get_json()
-    data = tempData.get('data')
-    name = tempData.get('name')
-    id = tempData.get('id')
-    df = pd.DataFrame(data)
-    table = pa.Table.from_pandas(df)
-    buffer = io.BytesIO()
-    pq.write_table(table,buffer)
-    pqEncoded = buffer.getvalue()
+    [id,name,pqEncoded] = service.postLiquidSheet(tempData)
     dbManager.insertLiquidSheet(db, id, name, pqEncoded)
-    return 'Save completed'
+    return {'data':'Save completed'}
 
 @app.route('/api/get/spread-sheet/<int:id>', methods=['GET'])
 def getSpreadSheet(id) -> dict:
-
     liquidSheet = dbManager.getLiquidSheetById(db, id)
-    name = liquidSheet[1]
-    data = liquidSheet[2]
-    print(liquidSheet)
-    buffer = io.BytesIO(data)
-    table = pq.read_table(buffer)
-    df = table.to_pandas()
-    spreadSheet = df.values.tolist()
-
+    [id,name,spreadSheet] = service.getLiquidSheet(liquidSheet)
     return {'liquidSheetName':name,
             'data':spreadSheet
             }
+
+@app.route('/api/get/spread-sheet/all', methods=['GET'])
+def getAllSpreadSheets() -> dict:
+    allSheets = []
+    liquidSheets = dbManager.getAllLiquidSheets(db)
+
+    for sheet in liquidSheets:
+        [id,name,spreadSheet] = service.getLiquidSheet(sheet)
+        allSheets.append([id,name,spreadSheet])
+
+    return {'data':allSheets}
 
 @socketio.on('connect')
 def handle_connect():
@@ -59,20 +56,17 @@ def handle_disconnect():
     sessionId = request.args.get('sessionId')
     print(f'{sessionId} Disconnected')
 
-@socketio.on('message')
-def handle_message(message):
-    emit('message', {'message':message}, broadcast=True)
-
 @socketio.on('titleChange')
 def handle_titleChange(message):
-    emit('titleChange', {'title':message}, broadcast=True)
+    emit('titleChange', {'id':message[0],'title':message[1]}, broadcast=True)
 
 @socketio.on('cellChange')
 def handle_cellChange(message):
     emit('cellChange', {
-        'row': message[0],
-        'prop': message[1],
-        'newValue': message[3]
+        'id':message[0],
+        'row': message[1][0],
+        'prop': message[1][1],
+        'newValue': message[1][3]
     }, broadcast=True, include_self=False)
 
 

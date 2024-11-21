@@ -22,7 +22,7 @@ export class DataService {
     return this.http.get<any>(`${environment.liquidDuckBackend}/get/spread-sheet/${id}`)
   }
 
-  public getAllSpreadSheetIds(): Observable<any>{
-    return this.http.get<any>(`${environment.liquidDuckBackend}/get/all-ids`)
+  public getAllSpreadSheets(): Observable<any>{
+    return this.http.get<any>(`${environment.liquidDuckBackend}/get/spread-sheet/all`)
   }
 }

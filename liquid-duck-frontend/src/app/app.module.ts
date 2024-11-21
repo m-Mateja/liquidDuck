@@ -12,6 +12,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {HttpClientModule} from "@angular/common/http";
 import {MatInputModule} from "@angular/material/input";
 import {provideAnimations} from "@angular/platform-browser/animations";
+import {MatSelectModule} from "@angular/material/select";
 
 registerAllModules()
 
@@ -29,7 +30,8 @@ registerAllModules()
         FormsModule,
         MatButtonModule,
         HttpClientModule,
-        MatInputModule
+        MatInputModule,
+        MatSelectModule
     ],
   providers: [
     HotTableRegisterer,
