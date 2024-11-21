@@ -2,10 +2,6 @@ from flask import Flask, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, send, emit
 import duckdb
-import pyarrow as pa
-import pyarrow.parquet as pq
-import pandas as pd
-import io
 import dbManager
 import service
 
@@ -68,7 +64,6 @@ def handle_cellChange(message):
         'prop': message[1][1],
         'newValue': message[1][3]
     }, broadcast=True, include_self=False)
-
 
 
 if __name__ == '__main__':
